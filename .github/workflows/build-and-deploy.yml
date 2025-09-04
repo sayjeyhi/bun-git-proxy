@@ -54,16 +54,15 @@ jobs:
             ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.CURRENT_DATE }}
             ghcr.io/${{ env.REPOSITORY_NAME }}:latest
 
-      - name: Deploy
-        uses: Azure/k8s-deploy@v5.0.1
-        with:
-          action: deploy
-          strategy: basic
-          imagepullsecrets: |
-            dockerconfigjson-github-com
-          manifests: |
-            ./k8s/deployment.yaml
-            ./k8s/service.yaml
-            ./k8s/ingress.yaml
-            ./k8s/middleware.yaml
-          images: ghcr.io/${{ env.REPOSITORY_NAME }}:${{ env.COMMIT_SHA_SHORT }}
+      - name: Deploy with Helm
+        run: |
+          # Set the image tag to the current commit SHA
+          helm upgrade --install bun-git-proxy ./helm/bun-git-proxy \
+            --namespace default \
+            --create-namespace \
+            --set image.tag=${{ env.COMMIT_SHA_SHORT }} \
+            --set image.repository=ghcr.io/${{ env.REPOSITORY_NAME }} \
+            --set image.pullPolicy=Always \
+            --wait \
+            --timeout=10m \
+            --atomic
