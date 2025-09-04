@@ -163,6 +163,18 @@ Bun.serve({
   port: PORT,
   fetch: async (request) => {
     try {
+      const url = new URL(request.url);
+      
+      // Health check endpoint
+      if (url.pathname === '/api/health') {
+        return json({
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          uptime: performance.now() / 1000,
+          version: '1.0.0'
+        });
+      }
+      
       return await handleProxyRequest(request);
     } catch (err) {
       console.error('[proxy] fatal:', err);
