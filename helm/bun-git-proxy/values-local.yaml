@@ -1,0 +1,36 @@
+# Local development values for bun-git-proxy
+# Usage: helm install bun-git-proxy ./helm/bun-git-proxy -f values-local.yaml
+
+# Image configuration for local development
+image:
+  repository: bun-git-proxy
+  tag: latest
+  pullPolicy: Never
+
+# Resource configuration for local development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Service configuration for local development
+service:
+  type: LoadBalancer
+
+# Disable ingress for local development
+ingress:
+  enabled: false
+
+# Disable middleware for local development
+middleware:
+  enabled: false
+  redirectHttps:
+    enabled: false
+    permanent: true
+
+# Environment variables for local development
+env:
+  NODE_ENV: development
